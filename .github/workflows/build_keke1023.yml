@@ -1,4 +1,4 @@
-name: Build firmware
+name: Build firmware keke1023
 
 on:
   workflow_dispatch:
@@ -13,6 +13,13 @@ jobs:
     defaults: { run: { shell: bash } }
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Prepare Ubuntu Environment
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
+          cpio git python3-docutils gettext autopoint texinfo build-essential help2man \
+          pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
 
     - name: Get variables
       run: |
