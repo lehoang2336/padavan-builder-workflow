@@ -34,9 +34,10 @@ jobs:
         # Clone repo mới của bạn và đặt vào thư mục padavan-ng
         git clone --depth 1 https://github.com/lehoang2336/padavan-ng.git padavan-ng
         
-        # Di chuyển vào đúng thư mục toolchain trong repo của bạn để tải toolchain
-        cd padavan-ng/toolchain
-        sh dl_toolchain.sh
+        # Di chuyển vào thư mục toolchain của keke1023 và chạy script tự động build/tải toolchain
+        cd padavan/toolchain
+        ./clean_sources
+        ./build_toolchain
 
     - name: Install themes
       run: |
