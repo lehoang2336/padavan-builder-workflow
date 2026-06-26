@@ -29,10 +29,11 @@ jobs:
         # Clone repo của keke1023 (mặc định nhánh chính thường là master hoặc main)
         git clone --depth 1 https://github.com/keke1023/Padavan.git padavan
         
-        # Di chuyển vào thư mục toolchain của keke1023 và chạy script tự động build/tải toolchain
+        # 2. Di chuyển vào đúng thư mục toolchain mới
         cd padavan/toolchain-mipsel
-        ./clean_sources
-        ./build_toolchain
+    
+        # 3. Chạy script tải toolchain đã biên dịch sẵn của keke1023
+        sh dl_toolchain.sh
 
     - name: Install themes
       run: |
