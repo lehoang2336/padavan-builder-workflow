@@ -31,11 +31,11 @@ jobs:
     - name: Download sources and toolchain
       run: |
         git config --global --add safe.directory '*'
-        # Clone repo mới của bạn và đặt vào thư mục padavan-ng
+        # Clone repo và đặt vào thư mục padavan-ng
         git clone --depth 1 https://github.com/lehoang2336/padavan-ng.git padavan-ng
         
-        # Di chuyển vào thư mục toolchain của keke1023 và chạy script tự động build/tải toolchain
-        cd padavan/toolchain
+        # Di chuyển vào đúng thư mục toolchain của padavan-ng vừa clone
+        cd padavan-ng/toolchain
         ./clean_sources
         ./build_toolchain
 
