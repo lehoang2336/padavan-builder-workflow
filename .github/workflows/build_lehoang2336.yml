@@ -31,17 +31,16 @@ jobs:
     - name: Download sources and toolchain
       run: |
         git config --global --add safe.directory '*'
+        # Clone repo và đặt vào thư mục padavan-ng
+        git clone --depth 1 https://github.com/lehoang2336/padavan-ng.git padavan-ng
         
-        # 1. Khởi tạo repo với tính năng lọc để không tải 126,000 files lặp đi lặp lại
-        git clone --depth 1 --filter=blob:none --sparse https://github.com/lehoang2336/padavan-ng.git padavan-ng
-        cd padavan-ng
+        # Di chuyển vào thư mục toolchain của padavan-ng
+        cd padavan-ng/toolchain
         
-        # 2. Chỉ lấy các file kịch bản cấu trúc của toolchain và thư mục trunk
-        git sparse-checkout set trunk toolchain
-        
-        # 3. Chạy script để hệ thống tự động tải file toolchain.tzst và đặt đúng vị trí
-        cd toolchain
+        # Cấp quyền thực thi cho các script (phòng trường hợp mất quyền từ repo)
         chmod +x clean_sources.sh build_toolchain.sh
+        
+        # Chạy đúng tên file có đuôi .sh
         ./clean_sources.sh
         ./build_toolchain.sh
 
