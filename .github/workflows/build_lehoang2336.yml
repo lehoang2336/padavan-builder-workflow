@@ -32,17 +32,18 @@ jobs:
       run: |
         git config --global --add safe.directory '*'
         
-        # 1. Chỉ clone đúng thư mục 'trunk' (nơi chứa code firmware), bỏ qua hoàn toàn toolchain
+        # 1. Khởi tạo repo với tính năng lọc để không tải 126,000 files lặp đi lặp lại
         git clone --depth 1 --filter=blob:none --sparse https://github.com/lehoang2336/padavan-ng.git padavan-ng
         cd padavan-ng
-        git sparse-checkout set trunk
         
-        # 2. Tạo một thư mục toolchain rỗng tương thích với cấu trúc của padavan-ng
-        mkdir -p toolchain/tooldir
+        # 2. Chỉ lấy các file kịch bản cấu trúc của toolchain và thư mục trunk
+        git sparse-checkout set trunk toolchain
         
-        # 3. Tải trực tiếp file toolchain pre-built và giải nén thẳng vào thư mục tooldir
-        echo "Downloading toolchain from $PADAVAN_TOOLCHAIN_URL..."
-        curl -L "$PADAVAN_TOOLCHAIN_URL" | tar -I zstd -x -C toolchain/tooldir --strip-components=1
+        # 3. Chạy script để hệ thống tự động tải file toolchain.tzst và đặt đúng vị trí
+        cd toolchain
+        chmod +x clean_sources.sh build_toolchain.sh
+        ./clean_sources.sh
+        ./build_toolchain.sh
 
     - name: Install themes
       run: |
