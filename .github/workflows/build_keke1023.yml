@@ -8,17 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04  # Sử dụng môi trường sạch của Ubuntu thay vì container cũ
+    runs-on: ubuntu-latest
+    #container: registry.gitlab.com/keke1023/Padavan
     defaults: { run: { shell: bash } }
     steps:
     - uses: actions/checkout@v4
-
-    - name: Prepare Ubuntu Environment
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
-          cpio git python3-docutils gettext automake autopoint texinfo build-essential help2man \
-          pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget
 
     - name: Get variables
       run: |
@@ -29,25 +23,26 @@ jobs:
           echo "$v=${!v}" >> $GITHUB_ENV
         done
 
-    - name: Download sources and toolchain
+    - name: Download sources and toolchain-mipsel
       run: |
         git config --global --add safe.directory '*'
-        # Clone mã nguồn của keke1023 về thư mục tên là 'padavan'
+        # Clone repo của keke1023 (mặc định nhánh chính thường là master hoặc main)
         git clone --depth 1 https://github.com/keke1023/Padavan.git padavan
         
-        # Di chuyển vào thư mục toolchain mới và chạy script để tải nhanh toolchain về
+        # Di chuyển vào thư mục toolchain của keke1023 và chạy script tự động build/tải toolchain
         cd padavan/toolchain-mipsel
-        sh dl_toolchain.sh
+        ./clean_sources
+        ./build_toolchain
 
     - name: Install themes
       run: |
         if [[ -n $PADAVAN_THEMES ]]; then
           git clone --depth 1 -b "$PADAVAN_THEMES_BRANCH" "$PADAVAN_THEMES_REPO" themes
-          cp -r themes/common-theme themes/jquery.js padavan/trunk/user/www/n56u_ribbon_fixed
+          cp -r themes/common-theme themes/jquery.js padavan-ng/trunk/user/www/n56u_ribbon_fixed
 
           for theme in $PADAVAN_THEMES; do
             echo "Installing $theme theme"
-            cp -r "themes/$theme-theme" padavan/trunk/user/www/n56u_ribbon_fixed
+            cp -r "themes/$theme-theme" padavan-ng/trunk/user/www/n56u_ribbon_fixed
           done
         fi
 
@@ -56,11 +51,8 @@ jobs:
 
     - name: Build firmware
       run: |
-        # Đưa file cấu hình vào thư mục trunk của mã nguồn keke1023
         cp build.config padavan/trunk/.config
         cd padavan/trunk
-        
-        # Chạy lệnh xóa rác và tiến hành build firmware
         ./clear_tree
         ./build_firmware
         
@@ -80,7 +72,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: padavan_${{ env.CONFIG_VENDOR }}_${{ env.CONFIG_FIRMWARE_PRODUCT_ID }}_${{ env.BUILD_TIMESTAMP }}
+        name: padavan-ng_${{ env.CONFIG_VENDOR }}_${{ env.CONFIG_FIRMWARE_PRODUCT_ID }}_${{ env.BUILD_TIMESTAMP }}
         retention-days: 7
         path: |
           ${{ env.FW_FILE_NAME }}
